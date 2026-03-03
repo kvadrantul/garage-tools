@@ -60,13 +60,13 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
   const isExpired = request.expiresAt && new Date(request.expiresAt) < new Date();
 
   return (
-    <div className="fixed bottom-4 right-4 w-96 bg-white rounded-lg shadow-xl border border-amber-200 overflow-hidden z-50">
+    <div className="fixed bottom-4 right-4 w-96 bg-card rounded-lg shadow-xl border border-amber-200 dark:border-amber-800 overflow-hidden z-50">
       {/* Header */}
-      <div className="bg-amber-50 px-4 py-3 border-b border-amber-200">
+      <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-3 border-b border-amber-200 dark:border-amber-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <AlertCircle className="text-amber-500" size={20} />
-            <span className="font-medium text-amber-800">
+            <span className="font-medium text-amber-800 dark:text-amber-300">
               {requestData.type === 'approval' && 'Approval Required'}
               {requestData.type === 'input' && 'Input Required'}
               {requestData.type === 'selection' && 'Selection Required'}
@@ -74,7 +74,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
           </div>
           <button
             onClick={onResolved}
-            className="p-1 hover:bg-amber-100 rounded text-amber-600"
+            className="p-1 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded text-amber-600 dark:text-amber-400 transition-colors"
           >
             <X size={16} />
           </button>
@@ -84,20 +84,20 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
       {/* Content */}
       <div className="p-4">
         {/* Message */}
-        <p className="text-gray-900 font-medium mb-2">{requestData.message}</p>
+        <p className="text-foreground font-medium mb-2">{requestData.message}</p>
 
         {/* Details */}
         {requestData.details && (
-          <p className="text-sm text-gray-600 mb-4">{requestData.details}</p>
+          <p className="text-sm text-muted-foreground mb-4">{requestData.details}</p>
         )}
 
         {/* Node info */}
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-muted-foreground mb-4">
           Node: {request.nodeId}
         </p>
 
         {isExpired ? (
-          <div className="p-3 bg-red-50 text-red-700 rounded text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded text-sm">
             This request has expired
           </div>
         ) : (
@@ -108,7 +108,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                 <button
                   onClick={handleApprove}
                   disabled={respondMutation.isPending}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
                 >
                   <CheckCircle size={16} />
                   Approve
@@ -116,7 +116,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                 <button
                   onClick={handleReject}
                   disabled={respondMutation.isPending}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 transition-colors"
                 >
                   <XCircle size={16} />
                   Reject
@@ -129,7 +129,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
               <div className="space-y-3">
                 {requestData.fields.map((field) => (
                   <div key={field.name}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-foreground mb-1">
                       {field.label}
                       {field.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
@@ -139,7 +139,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                         onChange={(e) =>
                           setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))
                         }
-                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded focus:ring-2 focus:ring-ring transition-colors"
                         rows={3}
                       />
                     ) : (
@@ -149,7 +149,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                         onChange={(e) =>
                           setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))
                         }
-                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-input bg-background text-foreground rounded focus:ring-2 focus:ring-ring transition-colors"
                       />
                     )}
                   </div>
@@ -157,7 +157,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                 <button
                   onClick={handleSubmitInput}
                   disabled={respondMutation.isPending}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   <Send size={16} />
                   Submit
@@ -174,8 +174,8 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                       key={option.value}
                       className={`flex items-center p-3 border rounded cursor-pointer transition-colors ${
                         selectedOption === option.value
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'hover:bg-gray-50'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:bg-accent/50'
                       }`}
                     >
                       <input
@@ -186,14 +186,14 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
                         onChange={(e) => setSelectedOption(e.target.value)}
                         className="mr-3"
                       />
-                      <span>{option.label}</span>
+                      <span className="text-foreground">{option.label}</span>
                     </label>
                   ))}
                 </div>
                 <button
                   onClick={handleSubmitSelection}
                   disabled={respondMutation.isPending || !selectedOption}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   <Send size={16} />
                   Submit Selection
@@ -205,7 +205,7 @@ export function HITLPanel({ request, onResolved }: HITLPanelProps) {
 
         {/* Error */}
         {respondMutation.isError && (
-          <div className="mt-3 p-2 bg-red-50 text-red-700 text-sm rounded">
+          <div className="mt-3 p-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm rounded">
             Failed to submit response
           </div>
         )}

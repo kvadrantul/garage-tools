@@ -52,8 +52,8 @@ export function NodePalette() {
   };
 
   return (
-    <div className="w-56 bg-white border-r p-4 overflow-y-auto">
-      <h2 className="font-semibold text-gray-700 mb-4">Nodes</h2>
+    <div className="w-56 bg-card border-r border-border p-4 overflow-y-auto">
+      <h2 className="font-semibold text-foreground mb-4">Nodes</h2>
 
       {categories.map((category) => {
         const categoryNodes = nodeDefinitions.filter((n) => n.category === category);
@@ -61,17 +61,17 @@ export function NodePalette() {
 
         return (
           <div key={category} className="mb-4">
-            <h3 className="text-xs font-medium text-gray-400 uppercase mb-2">{category}</h3>
+            <h3 className="text-xs font-medium text-muted-foreground uppercase mb-2">{category}</h3>
             <div className="space-y-1">
               {categoryNodes.map((node) => (
                 <div
                   key={node.type}
-                  className="flex items-center gap-2 p-2 bg-gray-50 rounded cursor-grab hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-2 p-2 bg-muted rounded cursor-grab hover:bg-accent transition-colors"
                   draggable
                   onDragStart={(e) => onDragStart(e, node.type)}
                 >
-                  <span className="text-gray-600">{node.icon}</span>
-                  <span className="text-sm text-gray-700">{node.name}</span>
+                  <span className="text-muted-foreground">{node.icon}</span>
+                  <span className="text-sm text-foreground">{node.name}</span>
                 </div>
               ))}
             </div>

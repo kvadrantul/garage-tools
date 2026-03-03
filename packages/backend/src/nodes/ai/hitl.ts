@@ -1,4 +1,4 @@
-import type { NodeRunner, NodeContext, NodeResult } from '@orchestrator/shared';
+import type { NodeRunner, NodeContext, NodeResult, HITLField } from '@orchestrator/shared';
 
 export const hitlNode: NodeRunner = {
   async execute(context: NodeContext): Promise<NodeResult> {
@@ -7,7 +7,7 @@ export const hitlNode: NodeRunner = {
       message?: string;
       details?: string;
       timeout?: number;
-      fields?: { name: string; type: string; label: string; required?: boolean }[];
+      fields?: HITLField[];
       options?: { label: string; value: string; description?: string }[];
     };
     const input = context.inputs.main[0];

@@ -17,14 +17,14 @@ import { useState } from 'react';
 import { executionsApi } from '@/api/client';
 
 const statusConfig: Record<string, { icon: typeof Clock; color: string; bg: string; text: string }> = {
-  pending: { icon: Clock, color: 'text-gray-500', bg: 'bg-gray-100', text: 'Pending' },
-  running: { icon: Loader2, color: 'text-blue-500', bg: 'bg-blue-100', text: 'Running' },
-  waiting_hitl: { icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-100', text: 'Waiting for Input' },
-  completed: { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-100', text: 'Completed' },
-  failed: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-100', text: 'Failed' },
-  stopped: { icon: StopCircle, color: 'text-gray-500', bg: 'bg-gray-100', text: 'Stopped' },
-  error: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-100', text: 'Error' },
-  skipped: { icon: Clock, color: 'text-gray-400', bg: 'bg-gray-50', text: 'Skipped' },
+  pending: { icon: Clock, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800', text: 'Pending' },
+  running: { icon: Loader2, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'Running' },
+  waiting_hitl: { icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'Waiting for Input' },
+  completed: { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30', text: 'Completed' },
+  failed: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30', text: 'Failed' },
+  stopped: { icon: StopCircle, color: 'text-gray-500', bg: 'bg-gray-100 dark:bg-gray-800', text: 'Stopped' },
+  error: { icon: XCircle, color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30', text: 'Error' },
+  skipped: { icon: Clock, color: 'text-gray-400', bg: 'bg-muted', text: 'Skipped' },
 };
 
 function JsonViewer({ data, label }: { data: unknown; label: string }) {
@@ -32,7 +32,7 @@ function JsonViewer({ data, label }: { data: unknown; label: string }) {
 
   if (data === null || data === undefined) {
     return (
-      <div className="text-sm text-gray-400 italic">No {label.toLowerCase()}</div>
+      <div className="text-sm text-muted-foreground italic">No {label.toLowerCase()}</div>
     );
   }
 
@@ -40,13 +40,13 @@ function JsonViewer({ data, label }: { data: unknown; label: string }) {
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-gray-900"
+        className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors"
       >
         {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         {label}
       </button>
       {isOpen && (
-        <pre className="mt-2 p-3 bg-gray-50 rounded text-xs overflow-auto max-h-64">
+        <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-auto max-h-64 text-foreground">
           {JSON.stringify(data, null, 2)}
         </pre>
       )}
@@ -69,18 +69,18 @@ export function ExecutionDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="animate-spin text-blue-500" size={32} />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={32} />
       </div>
     );
   }
 
   if (!execution) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500">Execution not found</p>
-          <Link to="/executions" className="text-blue-600 hover:underline mt-2 inline-block">
+          <p className="text-muted-foreground">Execution not found</p>
+          <Link to="/executions" className="text-primary hover:underline mt-2 inline-block">
             Back to executions
           </Link>
         </div>
@@ -100,20 +100,20 @@ export function ExecutionDetail() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b">
+      <header className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Link
               to="/executions"
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-colors"
             >
               <ArrowLeft size={20} />
             </Link>
             <div className="flex-1">
-              <h1 className="text-xl font-semibold text-gray-900">Execution Details</h1>
-              <p className="text-sm text-gray-500 mt-0.5">ID: {execution.id}</p>
+              <h1 className="text-xl font-semibold text-foreground">Execution Details</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">ID: {execution.id}</p>
             </div>
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${config.bg}`}>
               <StatusIcon
@@ -129,28 +129,28 @@ export function ExecutionDetail() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Summary Card */}
-        <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Summary</h2>
+        <div className="bg-card rounded-lg border border-border p-6 mb-6">
+          <h2 className="text-lg font-medium text-foreground mb-4">Summary</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
-              <p className="text-sm text-gray-500">Workflow</p>
-              <p className="font-medium">{execution.workflowName || execution.workflowId}</p>
+              <p className="text-sm text-muted-foreground">Workflow</p>
+              <p className="font-medium text-foreground">{execution.workflowName || execution.workflowId}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Trigger</p>
-              <p className="font-medium capitalize">{execution.triggerType}</p>
+              <p className="text-sm text-muted-foreground">Trigger</p>
+              <p className="font-medium text-foreground capitalize">{execution.triggerType}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Started</p>
-              <p className="font-medium">
+              <p className="text-sm text-muted-foreground">Started</p>
+              <p className="font-medium text-foreground">
                 {execution.startedAt
                   ? new Date(execution.startedAt).toLocaleString()
                   : '-'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Finished</p>
-              <p className="font-medium">
+              <p className="text-sm text-muted-foreground">Finished</p>
+              <p className="font-medium text-foreground">
                 {execution.finishedAt
                   ? new Date(execution.finishedAt).toLocaleString()
                   : execution.status === 'running'
@@ -161,9 +161,9 @@ export function ExecutionDetail() {
           </div>
 
           {execution.error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
-              <p className="text-sm font-medium text-red-800">Error</p>
-              <p className="text-sm text-red-600 mt-1">{execution.error}</p>
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded">
+              <p className="text-sm font-medium text-red-800 dark:text-red-400">Error</p>
+              <p className="text-sm text-red-600 dark:text-red-300 mt-1">{execution.error}</p>
             </div>
           )}
 
@@ -175,17 +175,17 @@ export function ExecutionDetail() {
         </div>
 
         {/* Node Results */}
-        <div className="bg-white rounded-lg border">
-          <div className="px-6 py-4 border-b">
-            <h2 className="text-lg font-medium text-gray-900">Node Results</h2>
+        <div className="bg-card rounded-lg border border-border">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-medium text-foreground">Node Results</h2>
           </div>
 
           {nodeResults.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
+            <div className="px-6 py-8 text-center text-muted-foreground">
               No node results yet
             </div>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-border">
               {nodeResults.map((node) => {
                 const nodeConfig = statusConfig[node.status] || statusConfig.pending;
                 const NodeStatusIcon = nodeConfig.icon;
@@ -203,14 +203,14 @@ export function ExecutionDetail() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3">
-                          <h3 className="font-medium text-gray-900">{node.nodeId}</h3>
+                          <h3 className="font-medium text-foreground">{node.nodeId}</h3>
                           <span className={`text-xs px-2 py-0.5 rounded ${nodeConfig.bg} ${nodeConfig.color}`}>
                             {nodeConfig.text}
                           </span>
                         </div>
 
                         {node.startedAt && (
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {new Date(node.startedAt).toLocaleString()}
                             {node.finishedAt && (
                               <> - {new Date(node.finishedAt).toLocaleString()}</>
@@ -219,7 +219,7 @@ export function ExecutionDetail() {
                         )}
 
                         {node.error && (
-                          <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-600">
+                          <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded text-sm text-red-600 dark:text-red-300">
                             {node.error}
                           </div>
                         )}

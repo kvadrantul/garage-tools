@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { hitlApi } from '@/api/client';
+import { AppHeader } from '@/components/AppHeader';
 
 interface HITLRequest {
   id: string;
@@ -47,18 +48,18 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
   const isPending = request.status === 'pending';
 
   return (
-    <div className="bg-white rounded-lg border overflow-hidden">
+    <div className="bg-card rounded-lg border border-border overflow-hidden">
       {/* Header */}
       <div
-        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-accent/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          {isExpanded ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />}
           <AlertCircle className="text-amber-500" size={20} />
           <div>
-            <p className="font-medium text-gray-900">{requestData.message}</p>
-            <p className="text-xs text-gray-500">
+            <p className="font-medium text-foreground">{requestData.message}</p>
+            <p className="text-xs text-muted-foreground">
               Node: {request.nodeId} | Type: {requestData.type}
             </p>
           </div>
@@ -67,19 +68,19 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
           <Link
             to={`/executions/${request.executionId}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-xs text-blue-600 hover:underline"
+            className="text-xs text-primary hover:underline"
           >
             View Execution
           </Link>
           <span
             className={`px-2 py-1 text-xs rounded ${
               isPending
-                ? 'bg-amber-100 text-amber-700'
+                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                 : request.status === 'approved'
-                ? 'bg-green-100 text-green-700'
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                 : request.status === 'rejected'
-                ? 'bg-red-100 text-red-700'
-                : 'bg-gray-100 text-gray-600'
+                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                : 'bg-muted text-muted-foreground'
             }`}
           >
             {request.status}
@@ -89,12 +90,12 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="px-4 py-4 border-t bg-gray-50">
+        <div className="px-4 py-4 border-t border-border bg-muted/50">
           {requestData.details && (
-            <p className="text-sm text-gray-600 mb-4">{requestData.details}</p>
+            <p className="text-sm text-muted-foreground mb-4">{requestData.details}</p>
           )}
 
-          <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
             <Clock size={12} />
             <span>Created: {new Date(request.createdAt).toLocaleString()}</span>
             {request.expiresAt && (
@@ -112,7 +113,7 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                   <button
                     onClick={() => respondMutation.mutate({ action: 'approve' })}
                     disabled={respondMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
                     <CheckCircle size={16} />
                     Approve
@@ -120,7 +121,7 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                   <button
                     onClick={() => respondMutation.mutate({ action: 'reject', reason: 'Rejected' })}
                     disabled={respondMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 transition-colors"
                   >
                     <XCircle size={16} />
                     Reject
@@ -133,7 +134,7 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                 <div className="space-y-3">
                   {requestData.fields.map((field) => (
                     <div key={field.name}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         {field.label}
                         {field.required && <span className="text-red-500 ml-1">*</span>}
                       </label>
@@ -143,14 +144,14 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                         onChange={(e) =>
                           setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))
                         }
-                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-input bg-background rounded focus:ring-2 focus:ring-ring transition-colors"
                       />
                     </div>
                   ))}
                   <button
                     onClick={() => respondMutation.mutate({ action: 'submit', data: formData })}
                     disabled={respondMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
                   >
                     <Send size={16} />
                     Submit
@@ -164,8 +165,8 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                   {requestData.options.map((option) => (
                     <label
                       key={option.value}
-                      className={`flex items-center p-3 border rounded cursor-pointer ${
-                        selectedOption === option.value ? 'border-blue-500 bg-blue-50' : 'bg-white'
+                      className={`flex items-center p-3 border rounded cursor-pointer transition-colors ${
+                        selectedOption === option.value ? 'border-primary bg-primary/5' : 'border-border bg-card hover:bg-accent/50'
                       }`}
                     >
                       <input
@@ -176,7 +177,7 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                         onChange={(e) => setSelectedOption(e.target.value)}
                         className="mr-3"
                       />
-                      {option.label}
+                      <span className="text-foreground">{option.label}</span>
                     </label>
                   ))}
                   <button
@@ -184,7 +185,7 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
                       respondMutation.mutate({ action: 'submit', data: { selection: selectedOption } })
                     }
                     disabled={respondMutation.isPending || !selectedOption}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
                   >
                     <Send size={16} />
                     Submit
@@ -193,13 +194,13 @@ function HITLRequestCard({ request, onRespond }: { request: HITLRequest; onRespo
               )}
 
               {respondMutation.isError && (
-                <p className="mt-2 text-sm text-red-600">Failed to submit response</p>
+                <p className="mt-2 text-sm text-red-600 dark:text-red-400">Failed to submit response</p>
               )}
             </>
           ) : isExpired ? (
-            <p className="text-sm text-red-600">This request has expired</p>
+            <p className="text-sm text-red-600 dark:text-red-400">This request has expired</p>
           ) : (
-            <p className="text-sm text-gray-500">This request has been {request.status}</p>
+            <p className="text-sm text-muted-foreground">This request has been {request.status}</p>
           )}
         </div>
       )}
@@ -222,37 +223,17 @@ export function HITLList() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link to="/workflows" className="text-2xl font-bold text-gray-900">
-              Orchestrator
-            </Link>
-            <nav className="flex items-center gap-4">
-              <Link to="/workflows" className="text-gray-600 hover:text-gray-900">
-                Workflows
-              </Link>
-              <Link to="/executions" className="text-gray-600 hover:text-gray-900">
-                Executions
-              </Link>
-              <Link to="/hitl" className="text-blue-600 font-medium">
-                HITL Requests
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <AppHeader />
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Human-in-the-Loop Requests</h2>
+          <h2 className="text-xl font-semibold text-foreground">Human-in-the-Loop Requests</h2>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-input bg-background text-foreground rounded focus:ring-2 focus:ring-ring transition-colors"
           >
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
@@ -262,12 +243,12 @@ export function HITLList() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12 text-gray-500">Loading...</div>
+          <div className="text-center py-12 text-muted-foreground">Loading...</div>
         ) : data?.data.length === 0 ? (
           <div className="text-center py-12">
-            <AlertCircle className="mx-auto text-gray-300 mb-4" size={48} />
-            <p className="text-gray-500">No {statusFilter || ''} HITL requests</p>
-            <p className="text-sm text-gray-400 mt-2">
+            <AlertCircle className="mx-auto text-muted-foreground/30 mb-4" size={48} />
+            <p className="text-muted-foreground">No {statusFilter || ''} HITL requests</p>
+            <p className="text-sm text-muted-foreground mt-2">
               When a workflow pauses for human input, requests will appear here
             </p>
           </div>

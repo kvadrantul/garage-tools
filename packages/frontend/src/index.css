@@ -6,12 +6,79 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.75rem;
+
+  --sidebar: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+.dark {
+  --background: 240 3% 6%;
+  --foreground: 210 2% 88%;
+  --card: 240 3% 10%;
+  --card-foreground: 210 2% 88%;
+  --popover: 240 3% 10%;
+  --popover-foreground: 210 2% 88%;
+  --primary: 217 89% 82%;
+  --primary-foreground: 240 3% 6%;
+  --secondary: 240 4% 16%;
+  --secondary-foreground: 210 2% 88%;
+  --muted: 240 4% 16%;
+  --muted-foreground: 240 2% 65%;
+  --accent: 240 4% 16%;
+  --accent-foreground: 210 2% 88%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 2% 88%;
+  --border: 240 4% 20%;
+  --input: 240 4% 20%;
+  --ring: 217 89% 82%;
+
+  --sidebar: 240 3% 8%;
+  --sidebar-foreground: 240 2% 75%;
+  --sidebar-primary: 217 89% 82%;
+  --sidebar-primary-foreground: 240 3% 6%;
+  --sidebar-accent: 240 4% 16%;
+  --sidebar-accent-foreground: 210 2% 88%;
+  --sidebar-border: 240 4% 16%;
+  --sidebar-ring: 217 89% 82%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
 }
 
 #root {
@@ -30,4 +97,36 @@ body {
 
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: #3b82f6;
+}
+
+/* Dark mode React Flow overrides */
+.dark .react-flow__background {
+  background-color: hsl(240 3% 6%);
+}
+
+.dark .react-flow__edge-path {
+  stroke: #555;
+}
+
+.dark .react-flow__minimap {
+  background-color: hsl(240 3% 10%);
+}
+
+.dark .react-flow__controls button {
+  background-color: hsl(240 3% 10%);
+  color: hsl(210 2% 88%);
+  border-color: hsl(240 4% 20%);
+}
+
+.dark .react-flow__controls button:hover {
+  background-color: hsl(240 4% 16%);
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-background/80 backdrop-blur-xl border border-border/50;
+  }
+  .layout-canvas {
+    @apply rounded-xl border border-border bg-card overflow-hidden;
+  }
 }

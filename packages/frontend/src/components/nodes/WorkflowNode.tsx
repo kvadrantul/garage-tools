@@ -31,17 +31,17 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 const categoryColors: Record<string, { bg: string; border: string; icon: string }> = {
-  'webhook-trigger': { bg: 'bg-purple-50', border: 'border-purple-300', icon: 'text-purple-600' },
-  'schedule-trigger': { bg: 'bg-purple-50', border: 'border-purple-300', icon: 'text-purple-600' },
-  'manual-trigger': { bg: 'bg-purple-50', border: 'border-purple-300', icon: 'text-purple-600' },
-  'http-request': { bg: 'bg-blue-50', border: 'border-blue-300', icon: 'text-blue-600' },
-  'code': { bg: 'bg-blue-50', border: 'border-blue-300', icon: 'text-blue-600' },
-  'if': { bg: 'bg-orange-50', border: 'border-orange-300', icon: 'text-orange-600' },
-  'switch': { bg: 'bg-orange-50', border: 'border-orange-300', icon: 'text-orange-600' },
-  'merge': { bg: 'bg-orange-50', border: 'border-orange-300', icon: 'text-orange-600' },
-  'set': { bg: 'bg-gray-50', border: 'border-gray-300', icon: 'text-gray-600' },
-  'agent': { bg: 'bg-green-50', border: 'border-green-300', icon: 'text-green-600' },
-  'hitl': { bg: 'bg-amber-50', border: 'border-amber-300', icon: 'text-amber-600' },
+  'webhook-trigger': { bg: 'bg-purple-50 dark:bg-purple-950/40', border: 'border-purple-300 dark:border-purple-700', icon: 'text-purple-600 dark:text-purple-400' },
+  'schedule-trigger': { bg: 'bg-purple-50 dark:bg-purple-950/40', border: 'border-purple-300 dark:border-purple-700', icon: 'text-purple-600 dark:text-purple-400' },
+  'manual-trigger': { bg: 'bg-purple-50 dark:bg-purple-950/40', border: 'border-purple-300 dark:border-purple-700', icon: 'text-purple-600 dark:text-purple-400' },
+  'http-request': { bg: 'bg-blue-50 dark:bg-blue-950/40', border: 'border-blue-300 dark:border-blue-700', icon: 'text-blue-600 dark:text-blue-400' },
+  'code': { bg: 'bg-blue-50 dark:bg-blue-950/40', border: 'border-blue-300 dark:border-blue-700', icon: 'text-blue-600 dark:text-blue-400' },
+  'if': { bg: 'bg-orange-50 dark:bg-orange-950/40', border: 'border-orange-300 dark:border-orange-700', icon: 'text-orange-600 dark:text-orange-400' },
+  'switch': { bg: 'bg-orange-50 dark:bg-orange-950/40', border: 'border-orange-300 dark:border-orange-700', icon: 'text-orange-600 dark:text-orange-400' },
+  'merge': { bg: 'bg-orange-50 dark:bg-orange-950/40', border: 'border-orange-300 dark:border-orange-700', icon: 'text-orange-600 dark:text-orange-400' },
+  'set': { bg: 'bg-muted', border: 'border-border', icon: 'text-muted-foreground' },
+  'agent': { bg: 'bg-green-50 dark:bg-green-950/40', border: 'border-green-300 dark:border-green-700', icon: 'text-green-600 dark:text-green-400' },
+  'hitl': { bg: 'bg-amber-50 dark:bg-amber-950/40', border: 'border-amber-300 dark:border-amber-700', icon: 'text-amber-600 dark:text-amber-400' },
 };
 
 const statusStyles: Record<string, string> = {
@@ -93,7 +93,7 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
         <Handle
           type="target"
           position={Position.Left}
-          className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
+          className="!w-3 !h-3 !bg-gray-400 dark:!bg-gray-500 !border-2 !border-white dark:!border-gray-800"
         />
       )}
 
@@ -104,7 +104,7 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
             <Icon size={16} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-gray-800 truncate">
+            <div className="text-sm font-medium text-foreground truncate">
               {data?.name || type}
             </div>
           </div>
@@ -127,17 +127,17 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
                     : 'bg-gray-400'
                 }`}
               />
-              <span className="text-[10px] text-gray-500 capitalize">{status.replace('_', ' ')}</span>
+              <span className="text-[10px] text-muted-foreground capitalize">{status.replace('_', ' ')}</span>
             </div>
             {duration !== undefined && (
-              <span className="text-[10px] text-gray-400">{formatDuration(duration)}</span>
+              <span className="text-[10px] text-muted-foreground">{formatDuration(duration)}</span>
             )}
           </div>
         )}
 
         {/* Error message */}
         {error && (
-          <div className="mt-1 text-[10px] text-red-600 truncate" title={error}>
+          <div className="mt-1 text-[10px] text-red-600 dark:text-red-400 truncate" title={error}>
             {error}
           </div>
         )}
@@ -149,7 +149,7 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
               e.stopPropagation();
               setShowOutput(!showOutput);
             }}
-            className="mt-1 flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700"
+            className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
           >
             {showOutput ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
             {showOutput ? 'Hide output' : 'Show output'}
@@ -159,8 +159,8 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
 
       {/* Output panel */}
       {showOutput && output && (
-        <div className="border-t px-2 py-1 max-h-32 overflow-auto bg-white/50">
-          <pre className="text-[9px] text-gray-600 whitespace-pre-wrap break-all">
+        <div className="border-t border-border px-2 py-1 max-h-32 overflow-auto bg-card/50">
+          <pre className="text-[9px] text-muted-foreground whitespace-pre-wrap break-all">
             {JSON.stringify(output, null, 2).slice(0, 500)}
             {JSON.stringify(output).length > 500 && '...'}
           </pre>
@@ -175,7 +175,7 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
             type="source"
             position={Position.Right}
             id={`output_${i}`}
-            className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
+            className="!w-3 !h-3 !bg-gray-400 dark:!bg-gray-500 !border-2 !border-white dark:!border-gray-800"
             style={{ top: `${((i + 1) / (outputs.length + 1)) * 100}%` }}
           />
         ))
@@ -183,7 +183,7 @@ function WorkflowNodeComponent({ data, type, selected }: NodeProps) {
         <Handle
           type="source"
           position={Position.Right}
-          className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
+          className="!w-3 !h-3 !bg-gray-400 dark:!bg-gray-500 !border-2 !border-white dark:!border-gray-800"
         />
       )}
     </div>

@@ -14,14 +14,14 @@ import ReactFlow, {
   type Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Save, Play, ArrowLeft } from 'lucide-react';
+import { Save, Play, ArrowLeft, Moon, Sun } from 'lucide-react';
 import { workflowsApi } from '@/api/client';
-import { useWorkflowStore } from '@/stores/workflowStore';
 import { NodePalette } from '@/components/canvas/NodePalette';
 import { NodeConfigPanel } from '@/components/panels/NodeConfigPanel';
 import { HITLPanel } from '@/components/panels/HITLPanel';
 import { WorkflowNode } from '@/components/nodes/WorkflowNode';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { useTheme } from '@/hooks/useTheme';
 
 interface HITLRequest {
   id: string;
@@ -52,8 +52,14 @@ export function WorkflowEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isNew = !id;
+  
+  // Local state (no Zustand store sync to avoid infinite loops)
+  const [workflowName, setWorkflowName] = useState('Untitled Workflow');
+  const [isDirty, setIsDirty] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [executionId, setExecutionId] = useState<string | null>(null);
   const [hitlRequest, setHitlRequest] = useState<HITLRequest | null>(null);
+  const { theme, toggle: toggleTheme } = useTheme();
 
   // Register all node types to use the same custom component
   const nodeTypes = useMemo(
@@ -61,23 +67,30 @@ export function WorkflowEditor() {
     [],
   );
 
-  const {
-    name,
-    nodes: storeNodes,
-    edges: storeEdges,
-    isDirty,
-    selectedNode,
-    setWorkflow,
-    setNodes: setStoreNodes,
-    setEdges: setStoreEdges,
-    setSelectedNode,
-    setName,
-    markClean,
-    reset,
-  } = useWorkflowStore();
+  // React Flow state - single source of truth for nodes/edges
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(storeNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(storeEdges);
+  // Track changes to mark as dirty
+  const handleNodesChange = useCallback(
+    (changes: any) => {
+      onNodesChange(changes);
+      if (changes.some((c: any) => c.type !== 'select')) {
+        setIsDirty(true);
+      }
+    },
+    [onNodesChange],
+  );
+
+  const handleEdgesChange = useCallback(
+    (changes: any) => {
+      onEdgesChange(changes);
+      if (changes.some((c: any) => c.type !== 'select')) {
+        setIsDirty(true);
+      }
+    },
+    [onEdgesChange],
+  );
 
   // WebSocket for real-time execution updates
   const wsMessageHandler = useCallback(
@@ -200,15 +213,6 @@ export function WorkflowEditor() {
     };
   }, [executionId, unsubscribe]);
 
-  // Sync React Flow state with store
-  useEffect(() => {
-    setStoreNodes(nodes);
-  }, [nodes, setStoreNodes]);
-
-  useEffect(() => {
-    setStoreEdges(edges);
-  }, [edges, setStoreEdges]);
-
   // Load workflow
   const { data: workflow, isLoading } = useQuery({
     queryKey: ['workflow', id],
@@ -216,9 +220,10 @@ export function WorkflowEditor() {
     enabled: !isNew,
   });
 
+  // Initialize from loaded workflow
   useEffect(() => {
     if (workflow) {
-      setWorkflow(workflow.id, workflow.name, workflow.definition);
+      setWorkflowName(workflow.name);
       setNodes(
         workflow.definition.nodes.map((n: any) => ({
           id: n.id,
@@ -228,10 +233,9 @@ export function WorkflowEditor() {
         })),
       );
       setEdges(workflow.definition.edges);
-    } else if (isNew) {
-      reset();
+      setIsDirty(false);
     }
-  }, [workflow, isNew, setWorkflow, setNodes, setEdges, reset]);
+  }, [workflow, setNodes, setEdges]);
 
   // Save workflow
   const saveMutation = useMutation({
@@ -253,14 +257,14 @@ export function WorkflowEditor() {
       };
 
       if (isNew) {
-        const result = await workflowsApi.create({ name, definition });
+        const result = await workflowsApi.create({ name: workflowName, definition });
         navigate(`/workflows/${result.id}`, { replace: true });
         return result;
       } else {
-        return workflowsApi.update(id!, { name, definition });
+        return workflowsApi.update(id!, { name: workflowName, definition });
       }
     },
-    onSuccess: () => markClean(),
+    onSuccess: () => setIsDirty(false),
   });
 
   // Execute workflow
@@ -289,15 +293,15 @@ export function WorkflowEditor() {
   // Node click handler
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
-      setSelectedNode(node.id);
+      setSelectedNodeId(node.id);
     },
-    [setSelectedNode],
+    [],
   );
 
   // Pane click (deselect)
   const onPaneClick = useCallback(() => {
-    setSelectedNode(null);
-  }, [setSelectedNode]);
+    setSelectedNodeId(null);
+  }, []);
 
   // Drag and drop from palette
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -331,41 +335,44 @@ export function WorkflowEditor() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-gray-500">Loading...</div>
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-background">
       {/* Toolbar */}
-      <header className="bg-white border-b px-4 py-2 flex items-center justify-between">
+      <header className="bg-card border-b border-border px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/workflows')}
-            className="p-2 hover:bg-gray-100 rounded"
+            className="p-2 hover:bg-accent rounded transition-colors text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft size={20} />
           </button>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="text-lg font-medium border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
+            value={workflowName}
+            onChange={(e) => {
+              setWorkflowName(e.target.value);
+              setIsDirty(true);
+            }}
+            className="text-lg font-medium border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-ring rounded px-2 py-1 text-foreground"
             placeholder="Workflow name"
           />
-          {isDirty && <span className="text-xs text-gray-400">Unsaved changes</span>}
+          {isDirty && <span className="text-xs text-muted-foreground">Unsaved changes</span>}
         </div>
 
         <div className="flex items-center gap-2">
           {executionId && (
-            <span className="text-xs text-blue-500 animate-pulse mr-2">Running...</span>
+            <span className="text-xs text-primary animate-pulse mr-2">Running...</span>
           )}
           <button
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
           >
             <Save size={16} />
             {saveMutation.isPending ? 'Saving...' : 'Save'}
@@ -374,12 +381,19 @@ export function WorkflowEditor() {
             <button
               onClick={() => executeMutation.mutate()}
               disabled={executeMutation.isPending || isDirty || !!executionId}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
             >
               <Play size={16} />
               Run
             </button>
           )}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
         </div>
       </header>
 
@@ -393,8 +407,8 @@ export function WorkflowEditor() {
           <ReactFlow
             nodes={nodes}
             edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
+            onNodesChange={handleNodesChange}
+            onEdgesChange={handleEdgesChange}
             onConnect={onConnect}
             onNodeClick={onNodeClick}
             onPaneClick={onPaneClick}
@@ -408,7 +422,14 @@ export function WorkflowEditor() {
         </div>
 
         {/* Config Panel */}
-        {selectedNode && <NodeConfigPanel />}
+        {selectedNodeId && (
+          <NodeConfigPanel
+            nodeId={selectedNodeId}
+            nodes={nodes}
+            setNodes={setNodes}
+            onClose={() => setSelectedNodeId(null)}
+          />
+        )}
       </div>
 
       {/* HITL Panel */}
