@@ -82,8 +82,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 {t.description}
               </ToastPrimitive.Description>
             )}
-            <ToastPrimitive.Close className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
-              <X size={14} />
+            <ToastPrimitive.Close className="absolute top-2 right-2 p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+              <X size={16} />
             </ToastPrimitive.Close>
           </ToastPrimitive.Root>
         ))}

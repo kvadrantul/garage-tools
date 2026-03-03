@@ -238,6 +238,10 @@ export function WorkflowEditor() {
       if (type === 'execution:completed' || type === 'execution:failed') {
         setExecutionId(null);
         setHitlRequest(null);
+        // Stop edge animations when execution ends
+        setEdges((eds) =>
+          eds.map((e) => ({ ...e, animated: false })),
+        );
         if (type === 'execution:completed') {
           toast({ title: 'Execution completed', variant: 'success' });
         } else {
@@ -322,7 +326,13 @@ export function WorkflowEditor() {
         return workflowsApi.update(id!, { name: workflowName, definition });
       }
     },
-    onSuccess: () => setIsDirty(false),
+    onSuccess: () => {
+      setIsDirty(false);
+      toast({ title: 'Workflow saved', variant: 'success' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Failed to save', description: error.message, variant: 'destructive' });
+    },
   });
 
   // Execute workflow
