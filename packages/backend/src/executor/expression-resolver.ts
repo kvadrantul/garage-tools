@@ -3,13 +3,12 @@
  *
  * Supports:
  * - {{ $input.path }} — upstream node's output data
- * - {{ $json.path }} — alias for $input (n8n compatibility)
+ * - {{ $json.path }} — alias for $input
  * - {{ $node["nodeName"].json.path }} — reference specific node output
  * - {{ $vars.varName }} — workflow-level variables
  * - {{ $env.VAR_NAME }} — environment variables
  *
- * Inspired by n8n's expression system but deliberately simplified
- * to dot-path template resolution (no JS eval, no sandbox needed).
+ * Simplified dot-path template resolution (no JS eval, no sandbox needed).
  */
 
 const EXPRESSION_RE = /\{\{\s*(.*?)\s*\}\}/g;
@@ -108,7 +107,7 @@ function resolveExpression(expr: string, ctx: ExpressionContext): unknown {
     return resolvePath(ctx.input, path);
   }
 
-  // $json — alias for $input (n8n compatibility)
+  // $json — alias for $input
   if (expr.startsWith('$json.')) {
     const path = expr.slice('$json.'.length);
     return resolvePath(ctx.input, path);

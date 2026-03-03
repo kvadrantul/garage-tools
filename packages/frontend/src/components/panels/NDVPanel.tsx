@@ -1,4 +1,4 @@
-// Node Detail View (NDV) Panel - n8n-style node inspector
+// Node Detail View (NDV) Panel - node inspector
 // Shows node configuration and execution input/output
 
 import { useState } from 'react';

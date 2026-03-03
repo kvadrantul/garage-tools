@@ -206,12 +206,12 @@ Original specifications in `specs/`:
 
 ### Expression Resolver (`packages/backend/src/executor/expression-resolver.ts`)
 
-Extended n8n-compatible expression syntax:
+Extended expression syntax:
 
 | Expression | Description |
 |------------|-------------|
 | `{{ $input.path }}` | Access upstream node output |
-| `{{ $json.path }}` | Alias for $input (n8n compatibility) |
+| `{{ $json.path }}` | Alias for $input |
 | `{{ $node["nodeName"].json.path }}` | Reference specific node output |
 | `{{ $vars.varName }}` | Workflow-level variables |
 | `{{ $env.VAR_NAME }}` | Environment variables |
@@ -227,7 +227,7 @@ Extended n8n-compatible expression syntax:
 
 ### NDV Panel (Node Detail View)
 
-n8n-style node inspector panel:
+Node inspector panel:
 - **Settings tab**: Node configuration with type-specific forms
 - **Output tab**: Execution results with status, duration, input/output data
 - Collapsible JSON data sections

@@ -7,7 +7,7 @@ Orchestrator is a visual workflow automation platform with native support for AI
 ## Vision
 
 Create a hybrid automation platform that combines:
-- **Deterministic workflows** (like n8n) for predictable, auditable processes
+- **Deterministic workflows** for predictable, auditable processes
 - **AI Agent integration** (OpenClaw) for intelligent, adaptive steps
 - **Human-in-the-Loop** for critical decision points and oversight
 
@@ -138,7 +138,6 @@ orchestrator/
 
 ## References
 
-- n8n (workflow engine architecture)
 - React Flow (canvas library)
 - OpenClaw (agent framework)
 - aixoffice (HITL patterns)

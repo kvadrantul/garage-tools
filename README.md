@@ -1,4 +1,4 @@
-# Garage Engine
+# Garage Tools
 
 Visual workflow automation platform with AI agent integration and Human-in-the-Loop (HITL) capabilities. Fork this repository to build your own workflow automation products.
 
@@ -15,8 +15,8 @@ Visual workflow automation platform with AI agent integration and Human-in-the-L
 
 ```bash
 # Clone the repository
-git clone https://github.com/kvadrantul/garage-engine.git
-cd garage-engine
+git clone https://github.com/kvadrantul/garage-tools.git
+cd garage-tools
 
 # Install dependencies
 pnpm install
@@ -31,11 +31,11 @@ pnpm dev
 ## Project Structure
 
 ```
-garage-engine/
+garage-tools/
 ├── packages/
-│   ├── shared/       # @garage-engine/shared - Types and DB schema
-│   ├── backend/      # @garage-engine/backend - Express API + Executor
-│   └── frontend/     # @garage-engine/frontend - React UI
+│   ├── shared/       # @garage-tools/shared - Types and DB schema
+│   ├── backend/      # @garage-tools/backend - Express API + Executor
+│   └── frontend/     # @garage-tools/frontend - React UI
 ├── specs/            # Technical specifications
 └── drizzle/          # Database migrations
 ```
@@ -115,7 +115,7 @@ This repository is designed to be forked and extended for specific use cases:
 
 ```typescript
 // packages/backend/src/nodes/custom/my-node.ts
-import type { NodeRunner, NodeContext, NodeResult } from '@garage-engine/shared';
+import type { NodeRunner, NodeContext, NodeResult } from '@garage-tools/shared';
 
 export const myCustomNode: NodeRunner = {
   async execute(context: NodeContext): Promise<NodeResult> {
