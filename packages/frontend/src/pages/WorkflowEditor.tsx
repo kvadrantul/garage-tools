@@ -21,6 +21,7 @@ import { NDVPanel } from '@/components/panels/NDVPanel';
 import { HITLPanel } from '@/components/panels/HITLPanel';
 import { ExecutionHistorySidebar } from '@/components/panels/ExecutionHistorySidebar';
 import { WorkflowNode } from '@/components/nodes/WorkflowNode';
+import { DeletableEdge } from '@/components/edges/DeletableEdge';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/components/ui/Toast';
@@ -71,6 +72,12 @@ export function WorkflowEditor() {
     [],
   );
 
+  // Register custom edge type with delete button
+  const edgeTypes = useMemo(
+    () => ({ default: DeletableEdge }),
+    [],
+  );
+
   // React Flow state - single source of truth for nodes/edges
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -105,6 +112,15 @@ export function WorkflowEditor() {
       setIsDirty(true);
     },
     [setNodes, setEdges],
+  );
+
+  // Delete edge handler (for hover delete on connections)
+  const deleteEdge = useCallback(
+    (edgeId: string) => {
+      setEdges((eds) => eds.filter((e) => e.id !== edgeId));
+      setIsDirty(true);
+    },
+    [setEdges],
   );
 
   // WebSocket for real-time execution updates
@@ -264,10 +280,15 @@ export function WorkflowEditor() {
           data: { ...n.data, onDelete: deleteNode },
         })),
       );
-      setEdges(workflow.definition.edges);
+      setEdges(
+        workflow.definition.edges.map((e: any) => ({
+          ...e,
+          data: { ...e.data, onDelete: deleteEdge },
+        })),
+      );
       setIsDirty(false);
     }
-  }, [workflow, setNodes, setEdges, deleteNode]);
+  }, [workflow, setNodes, setEdges, deleteNode, deleteEdge]);
 
   // Save workflow
   const saveMutation = useMutation({
@@ -338,9 +359,9 @@ export function WorkflowEditor() {
   // Connection handler
   const onConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => addEdge(connection, eds));
+      setEdges((eds) => addEdge({ ...connection, data: { onDelete: deleteEdge } }, eds));
     },
-    [setEdges],
+    [setEdges, deleteEdge],
   );
 
   // Node click handler
@@ -497,6 +518,7 @@ export function WorkflowEditor() {
             onNodeClick={onNodeClick}
             onPaneClick={onPaneClick}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             deleteKeyCode={['Backspace', 'Delete']}
             fitView
           >
